@@ -1,0 +1,44 @@
+const languages = {
+    ua: {
+        question: "Введіть номер дня неділі від 1 до 7?",
+        error: "Неправильний ввід даних. Спробуйте ще раз.",
+        days: ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"]
+    },
+    en: {
+        question: "Enter the day number of the week (from 1 to 7)?",
+        error: "Invalid input. Please try again.",
+        days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    }
+};
+
+// Функція для виведення модального вікна з питанням і обробкою введеного значення
+function askLanguage() {
+    let language = "";
+    do {
+        language = prompt("Виберіть мову 'ua' або 'en'?", "").toLowerCase();
+        if (language !== 'ua' && language !== 'en') {
+            alert("Неправильний ввід даних. Спробуйте ще раз.");
+        }
+    } while (language !== 'ua' && language !== 'en');
+
+    const dayNumber = askDayNumber(language);
+    if (dayNumber !== null) {
+        const dayName = languages[language].days[dayNumber - 1];
+        alert(`День тижня: ${dayName}`);
+    }
+}
+
+// Функція для виведення модального вікна з питанням про номер дня тижня і обробкою введеного значення
+function askDayNumber(language) {
+    let dayNumber = null;
+    do {
+        dayNumber = parseInt(prompt(languages[language].question, ""), 10);
+        if (!(dayNumber >= 1 && dayNumber <= 7)) {
+            alert(languages[language].error);
+        }
+    } while (!(dayNumber >= 1 && dayNumber <= 7));
+    return dayNumber;
+}
+
+// Викликаємо перше модальне вікно для вибору мови
+askLanguage();

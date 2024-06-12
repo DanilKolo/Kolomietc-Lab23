@@ -1,0 +1,110 @@
+class PowerStation {
+    constructor(power) {
+        this.power = power; // Потужність в мегаватах
+    }
+
+    // Метод для вироблення електроенергії
+    generateElectricity() {
+        return this.power; // Всю потужність виробляємо вдень
+    }
+}
+
+// Клас Сонячна панель
+class SolarPanel {
+    constructor(type) {
+        this.type = type; // Тип панелі, який визначає потужність
+        this.dayPower = this.calculateDayPower(); // Денна потужність в мегаватах
+    }
+
+    // Метод для обчислення денної потужності панелі
+    calculateDayPower() {
+        switch (this.type) {
+            case 'type1':
+                return 1;
+            case 'type2':
+                return 2;
+            // інші типи сонячних панелей
+            default:
+                return 0;
+        }
+    }
+
+    // Метод для генерації електроенергії
+    generateElectricity(isDay) {
+        if (isDay) {
+            return this.dayPower; // Вдень генеруємо відповідну потужність
+        } else {
+            return 0; // Вночі не генеруємо електроенергію
+        }
+    }
+}
+
+// Клас Житловий будинок
+class ResidentialBuilding {
+    constructor(numApartments) {
+        this.numApartments = numApartments; // Кількість квартир
+    }
+
+    // Метод для розрахунку споживання електроенергії
+    consumeElectricity(isDay) {
+        const dayConsumption = this.numApartments * (isDay ? 4 : 1); // Вдень - 4 кВт на квартиру, вночі - 1 кВт на квартиру
+        return dayConsumption / 1000; // Переводимо в мегавати
+    }
+}
+
+// Клас Лінія електропередачі
+class PowerLine {
+    constructor(powerCapacity, pricePerMW) {
+        this.powerCapacity = powerCapacity; // Потужність лінії в мегаватах
+        this.pricePerMW = pricePerMW; // Ціна за мегават
+    }
+
+    // Метод для вирівнювання потужності (приймає або віддає електроенергію)
+    balanceElectricity(balance) {
+        if (balance > 0) {
+            // Потужність віддаються
+            const soldPower = Math.min(balance, this.powerCapacity);
+            return soldPower * this.pricePerMW;
+        } else if (balance < 0) {
+            // Потужність приймаються
+            const boughtPower = Math.min(-balance, this.powerCapacity);
+            return -boughtPower * this.pricePerMW;
+        } else {
+            return 0; // Нічого не робимо, бо баланс уже збалансований
+        }
+    }
+}
+
+// Основна функція для обчислення балансу електрики в мережі
+function calculateElectricityBalance(networkElements) {
+    let totalCostProfit = 0;
+    let totalElectricityNeeded = 0;
+
+    // Проходимося по всіх елементах мережі
+    networkElements.forEach(element => {
+        if (element instanceof PowerStation || element instanceof SolarPanel) {
+            // Генеруємо електроенергію вдень
+            totalElectricityNeeded += element.generateElectricity();
+        } else if (element instanceof ResidentialBuilding) {
+            // Розраховуємо споживання електроенергії
+            totalElectricityNeeded -= element.consumeElectricity(true); // Вдень
+            totalElectricityNeeded -= element.consumeElectricity(false); // Вночі
+        } else if (element instanceof PowerLine) {
+            // Балансуємо електроенергію на лінії
+            totalCostProfit += element.balanceElectricity(totalElectricityNeeded);
+        }
+    });
+
+    return totalCostProfit;
+}
+
+// Приклад використання програми
+const elements = [
+    new PowerStation(50),
+    new SolarPanel('type1'),
+    new ResidentialBuilding(200),
+    new PowerLine(30, 50) // Потужність 30 МВт, ціна за МВт - $50
+];
+
+const profit = calculateElectricityBalance(elements);
+console.log(`Profit/Loss: $${profit}`);
